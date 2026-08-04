@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRANSMARVIN · Dashboard Financeiro 2026</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #1a56db;
+      --blue-dark: #1041b2;
+      --blue-light: #ebf0ff;
+      --green: #057a55;
+      --green-light: #def7ec;
+      --red: #c81e1e;
+      --red-light: #fde8e8;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --white: #ffffff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-900);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: -.01em;
+    }
+    .logo-sub {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 1px;
+    }
+    .header-badge {
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* NAV */
+    .nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+    }
+    .nav-btn {
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-500);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .nav-btn:hover { color: var(--gray-900); }
+    .nav-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+    /* MAIN */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* TAB PANELS */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* KPI GRID */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: -.02em;
+    }
+    .kpi-sub { font-size: 12px; color: var(--gray-500); margin-top: 5px; }
+    .kpi-accent { border-top: 3px solid var(--blue); }
+    .kpi-red { border-top: 3px solid var(--red); }
+    .kpi-green { border-top: 3px solid var(--green); }
+    .kpi-amber { border-top: 3px solid var(--amber); }
+
+    /* CARDS */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+    .card-sub {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    /* GRID */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    /* CHARTS */
+    .chart-wrap { position: relative; width: 100%; }
+
+    /* LEGEND */
+    .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 12px; }
+    .leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-600); }
+    .leg-sq { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .leg-line { width: 20px; height: 2.5px; border-radius: 2px; flex-shrink: 0; }
+
+    /* MONTH BUTTONS */
+    .month-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .month-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--gray-300);
+      background: var(--white);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-700);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .month-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+    .month-btn.active { background: var(--blue); border-color: var(--blue); color: var(--white); }
+    .month-btn.warn { border-color: #d97706; color: #92400e; }
+    .month-btn.active.warn { background: #d97706; border-color: #d97706; color: var(--white); }
+
+    /* DRE */
+    .dre-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
+    .dre-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 13px;
+      gap: 12px;
+    }
+    .dre-row:last-child { border-bottom: none; }
+    .dre-sep {
+      border-top: 2px solid var(--gray-200);
+      margin-top: 6px;
+      padding-top: 12px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .dre-result {
+      margin-top: 8px;
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .dre-result.positive { background: var(--green-light); color: var(--green); }
+    .dre-result.negative { background: var(--red-light); color: var(--red); }
+    .dre-result-op {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--gray-50);
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      border: 1px solid var(--gray-200);
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-left: 6px;
+      vertical-align: middle;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .badge-warn { background: var(--amber-light); color: var(--amber); }
+    .badge-red { background: var(--red-light); color: var(--red); }
+    .badge-blue { background: var(--blue-light); color: var(--blue); }
+
+    /* INSIGHT CARDS */
+    .insight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+    .insight-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 22px;
+    }
+    .insight-card.alert { border-left: 4px solid var(--red); }
+    .insight-card.warning { border-left: 4px solid #d97706; }
+    .insight-card.info { border-left: 4px solid var(--blue); }
+    .insight-icon { font-size: 24px; margin-bottom: 10px; }
+    .insight-metric { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .insight-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--gray-900); }
+    .insight-body { font-size: 13px; color: var(--gray-600); line-height: 1.65; }
+
+    /* ACTION PLAN */
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .action-section-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .action-list { list-style: none; padding: 0; }
+    .action-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 13px;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+    .action-item:last-child { border-bottom: none; }
+    .action-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .num-red { background: var(--red-light); color: var(--red); }
+    .num-amber { background: var(--amber-light); color: var(--amber); }
+
+    /* COLORS */
+    .green { color: var(--green); }
+    .red { color: var(--red); }
+    .amber { color: var(--amber); }
+    .muted { color: var(--gray-500); }
+
+    /* NOTE */
+    .note-bar {
+      background: var(--amber-light);
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #92400e;
+      margin-top: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 12px;
+      color: var(--gray-500);
+      border-top: 1px solid var(--gray-200);
+      margin-top: 1rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .insight-grid { grid-template-columns: 1fr 1fr; }
+      .grid-2, .grid-3, .dre-layout, .action-grid { grid-template-columns: 1fr; }
+      .main { padding: 1rem; }
+      .nav-btn { padding: 12px 14px; font-size: 13px; }
+    }
+    @media (max-width: 600px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .insight-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">TM</div>
+      <div>
+        <div class="logo-text">TRANSMARVIN</div>
+        <div class="logo-sub">Dashboard Financeiro</div>
+      </div>
+    </div>
+    <span class="header-badge">Jan – Jul 2026</span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showTab('overview',this)">Visão Geral</button>
+    <button class="nav-btn" onclick="showTab('dre',this)">DRE Mensal</button>
+    <button class="nav-btn" onclick="showTab('categories',this)">Categorias</button>
+    <button class="nav-btn" onclick="showTab('insights',this)">Insights</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ===== VISÃO GERAL ===== -->
+  <div class="tab-panel active" id="tab-overview">
+
+    <div class="kpi-grid">
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Receitas Realizadas</div>
+        <div class="kpi-value" style="color:var(--blue)">R$ 3,86M</div>
+        <div class="kpi-sub">Jan–Jul 2026 · operacional</div>
+      </div>
+      <div class="kpi kpi-red">
+        <div class="kpi-label">Despesas Realizadas</div>
+        <div class="kpi-value" style="color:var(--red)">R$ 3,95M</div>
+        <div class="kpi-sub">Jan–Jul 2026</div>
+      </div>
+      <div class="kpi kpi-red">
+        <div class="kpi-label">Resultado Operacional</div>
+        <div class="kpi-value" style="color:var(--red)">-R$ 88,2k</div>
+        <div class="kpi-sub">Acumulado jan–jul</div>
+      </div>
+      <div class="kpi kpi-amber">
+        <div class="kpi-label">Saldo em Caixa (jul)</div>
+        <div class="kpi-value" style="color:var(--amber)">-R$ 16,3k</div>
+        <div class="kpi-sub">Realizado <span class="badge badge-warn">Atenção</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Receitas vs Despesas — mensal</div>
+          <div class="card-sub">Valores realizados em R$</div>
+        </div>
+      </div>
+      <div class="legend">
+        <span class="leg"><span class="leg-sq" style="background:#1a56db"></span>Receitas totais</span>
+        <span class="leg"><span class="leg-sq" style="background:#e34948"></span>Despesas</span>
+        <span class="leg"><span class="leg-line" style="background:#057a55"></span>Saldo final</span>
+      </div>
+      <div class="chart-wrap" style="height:280px">
+        <canvas id="mainChart" role="img" aria-label="Barras de receitas e despesas mensais com linha de saldo final, janeiro a julho 2026">Receitas vs despesas mensais TRANSMARVIN 2026.</canvas>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Resultado operacional por mês</div>
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="resultChart" role="img" aria-label="Barras de resultado operacional por mês em 2026">Resultado operacional mensal 2026.</canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Saldo final de caixa — jan a ago</div>
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="saldoChart" role="img" aria-label="Linha de saldo final de caixa de janeiro a agosto 2026">Saldo final de caixa 2026.</canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== DRE MENSAL ===== -->
+  <div class="tab-panel" id="tab-dre">
+
+    <div class="month-bar" id="dreBtns"></div>
+
+    <div class="dre-layout">
+
+      <div class="card" style="margin-bottom:0" id="dreCard"></div>
+
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Despesas como % da receita total</div>
+            <div class="card-sub" id="pctSub"></div>
+          </div>
+        </div>
+        <div class="chart-wrap" id="pctWrap" style="height:340px">
+          <canvas id="pctChart" role="img" aria-label="Barras horizontais com percentual de cada categoria de despesa sobre a receita total do mês selecionado"></canvas>
+        </div>
+        <div id="pctNote" style="font-size:12px;color:var(--gray-500);margin-top:10px;"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== CATEGORIAS ===== -->
+  <div class="tab-panel" id="tab-categories">
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Composição das despesas — evolução mensal</div>
+          <div class="card-sub">Barras empilhadas em R$</div>
+        </div>
+      </div>
+      <div class="legend" id="catLegend"></div>
+      <div class="chart-wrap" style="height:300px">
+        <canvas id="catChart" role="img" aria-label="Barras empilhadas de despesas por categoria de janeiro a julho 2026">Despesas por categoria 2026.</canvas>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Participação acumulada jan–jul</div>
+        <div class="chart-wrap" style="height:280px">
+          <canvas id="donutChart" role="img" aria-label="Rosca com participação percentual de cada categoria no total acumulado de despesas">Participação por categoria acumulada.</canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Despesas com Vendas/Serv. vs Receitas</div>
+        <div class="card-sub" style="margin-bottom:12px;font-size:12px;color:var(--gray-500)">Categoria 4.02 — maior custo operacional</div>
+        <div class="chart-wrap" style="height:240px">
+          <canvas id="vendChart" role="img" aria-label="Comparativo entre despesas com vendas e serviços e receita operacional por mês">Desp. Vendas vs Receitas mensais.</canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== INSIGHTS ===== -->
+  <div class="tab-panel" id="tab-insights">
+
+    <div class="insight-grid">
+
+      <div class="insight-card alert">
+        <div class="insight-icon">⚠️</div>
+        <div class="insight-metric" style="color:var(--red)">R$ 294k</div>
+        <div class="insight-title">Receita não-operacional em junho</div>
+        <div class="insight-body">Uma entrada de R$ 294k em "Outras Receitas" inflou o resultado de junho para +R$ 86k. <strong>Sem esse valor, o resultado operacional seria -R$ 208k.</strong> Verificar se é aporte de sócios ou empréstimo — não deve ser tratado como receita recorrente.</div>
+      </div>
+
+      <div class="insight-card alert">
+        <div class="insight-icon">📉</div>
+        <div class="insight-metric" style="color:var(--red)">5 de 7</div>
+        <div class="insight-title">Meses com resultado operacional negativo</div>
+        <div class="insight-body">Apenas abril (+R$ 35k) e junho (+R$ 86k, com não-op) fecharam no positivo. O caixa opera no limite mês a mês. Sem melhora na margem operacional, a empresa depende de aportes externos para se sustentar.</div>
+      </div>
+
+      <div class="insight-card alert">
+        <div class="insight-icon">💸</div>
+        <div class="insight-metric" style="color:var(--red)">~72%</div>
+        <div class="insight-title">Custo com Vendas/Serviços sobre receita</div>
+        <div class="insight-body">A categoria 4.02 consome em média 72% da receita operacional — chegando a 90%+ em meses ruins. É o principal gargalo. Necessário analisar custo por contrato/serviço para identificar onde as margens são negativas.</div>
+      </div>
+
+      <div class="insight-card warning">
+        <div class="insight-icon">🏦</div>
+        <div class="insight-metric" style="color:var(--amber)">R$ 202k</div>
+        <div class="insight-title">Recebíveis vencidos em aberto</div>
+        <div class="insight-body">Há R$ 202k em contas a receber já vencidas no Conta Azul. Cobrar esse montante cobriria mais de 2 meses de resultado negativo. Priorizar os maiores devedores e estabelecer régua de cobrança automática.</div>
+      </div>
+
+      <div class="insight-card warning">
+        <div class="insight-icon">📈</div>
+        <div class="insight-metric" style="color:var(--amber)">Junho</div>
+        <div class="insight-title">O melhor mês — entender o porquê</div>
+        <div class="insight-body">Junho teve receita operacional de R$ 535k — o mais alto do período, excluindo o item não-op. O que foi diferente? Volume de projetos, precificação ou prazo de cobrança? Replicar essa estratégia nos demais meses é prioridade comercial.</div>
+      </div>
+
+      <div class="insight-card warning">
+        <div class="insight-icon">⚡</div>
+        <div class="insight-metric" style="color:var(--amber)">R$ 48,7k</div>
+        <div class="insight-title">Despesas financeiras dispararam em junho</div>
+        <div class="insight-body">A categoria 4.10 saltou de ~R$ 1k/mês para R$ 48,7k em junho — sozinha representa 5,9% da receita do mês. Pode indicar contratação de empréstimo com juros elevados, multa ou encargo. Investigar a origem com urgência.</div>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:20px">Plano de ação</div>
+      <div class="action-grid">
+        <div>
+          <div class="action-section-title" style="color:var(--red)">
+            <span style="width:10px;height:10px;background:var(--red);border-radius:50%;display:inline-block"></span>
+            Ações urgentes
+          </div>
+          <ul class="action-list">
+            <li class="action-item">
+              <span class="action-num num-red">1</span>
+              <span>Acionar cobrança dos <strong>R$ 202k em recebíveis vencidos</strong> — listar clientes, enviar notificação e definir prazo máximo de regularização.</span>
+            </li>
+            <li class="action-item">
+              <span class="action-num num-red">2</span>
+              <span>Classificar a entrada de <strong>R$ 294k de junho</strong>: se for empréstimo, registrar como passivo. Se aporte de sócio, lançar em patrimônio. Não manter como receita operacional.</span>
+            </li>
+            <li class="action-item">
+              <span class="action-num num-red">3</span>
+              <span>Mapear os custos dentro da <strong>categoria 4.02 por serviço/contrato</strong> para identificar quais projetos têm margem negativa.</span>
+            </li>
+            <li class="action-item">
+              <span class="action-num num-red">4</span>
+              <span>Investigar a <strong>despesa financeira de R$ 48,7k em junho</strong> — identificar origem, taxa e condições. Avaliar refinanciamento se aplicável.</span>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="action-section-title" style="color:var(--amber)">
+            <span style="width:10px;height:10px;background:#d97706;border-radius:50%;display:inline-block"></span>
+            Curto prazo (30–90 dias)
+          </div>
+          <ul class="action-list">
+            <li class="action-item">
+              <span class="action-num num-amber">1</span>
+              <span>Analisar pico de <strong>despesas adm. em maio–jun (R$ 50–57k)</strong> versus média histórica de R$ 27k — cortar despesas eventuais.</span>
+            </li>
+            <li class="action-item">
+              <span class="action-num num-amber">2</span>
+              <span>Revisar contratos de imóvel: custo variou de <strong>R$ 933 a R$ 29,7k</strong> no mesmo ano — entender a composição e negociar valores fixos.</span>
+            </li>
+            <li class="action-item">
+              <span class="action-num num-amber">3</span>
+              <span>Definir <strong>meta de receita operacional mínima de R$ 550k/mês</strong> para cobrir as despesas fixas com margem positiva.</span>
+            </li>
+            <li class="action-item">
+              <span class="action-num num-amber">4</span>
+              <span>Renegociar ou amortizar <strong>empréstimos e financiamentos</strong> (R$ 113k pago em 7 meses) — avaliar custo do capital vs. alternativas.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  TRANSMARVIN · Dados: Conta Azul · Ano fiscal 2026 · Agosto reflete dados parciais · Atualizado em agosto/2026
+</footer>
+
+<script>
+/* ── DATA ── */
+const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul'];
+const REC_OP    = [478356, 366628, 550042, 578412, 529087, 535887, 439668];
+const REC_NONOP = [3508,   8141,   22759,  2275,   163,    294434, 56010];
+const TOTAL_REC = [481864, 374769, 572801, 580686, 529250, 830321, 495678];
+const TOTAL_DESP= [486632, 434953, 590975, 545361, 609616, 743869, 542203];
+const SALDO     = [67177,  6992,  -11181,  24144, -56221,  30231, -16294, -49305];
+const SALDO_M   = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago'];
+const RES_OP    = REC_OP.map((r,i) => r - TOTAL_DESP[i]);
+
+const CAT_LABELS = ['Impostos','Vendas/Serv.','Pessoal','Adm.','Comercial','Imóvel','Veículos','Diretoria','Fin.+Emprést.','Outros'];
+const CAT_COLORS = ['#1a56db','#dc2626','#d97706','#059669','#7c3aed','#0891b2','#9ca3af','#ec4899','#16a34a','#92400e'];
+const CAT_DATA   = [
+  [12246, 9526,  19072,  6535,  4492, 13166,  6564],
+  [349305,291031,425280,383274,441550,482653,366544],
+  [23082, 32141, 36809, 45096, 23515, 41493, 41846],
+  [27370, 30900, 25234, 21846, 50743, 57331, 28157],
+  [19208, 20020, 13795, 15943, 16672, 19989, 22376],
+  [14994, 14743, 15122, 29722, 14000, 29183,   933],
+  [1032,    755,  6882,  1193,  1868,  2169,  2218],
+  [24853, 20646, 22811, 21129, 25536, 22203,  1814],
+  [12145, 12310, 11812, 13403, 19420, 67455, 30506],
+  [2397,  2881,  14158,  7220, 11820,  8227, 41245]
+];
+
+/* ── FORMATTERS ── */
+function fmtK(v) {
+  const a = Math.abs(v), s = v < 0 ? '-' : '+';
+  if (a >= 1e6) return s + 'R$ ' + (a/1e6).toFixed(2) + 'M';
+  if (a >= 1e3) return s + 'R$ ' + (a/1e3).toFixed(1) + 'k';
+  return s + 'R$ ' + a.toFixed(0);
+}
+function fmtAbs(v) {
+  const a = Math.abs(v);
+  if (a >= 1e6) return 'R$ ' + (a/1e6).toFixed(2) + 'M';
+  if (a >= 1e3) return 'R$ ' + (a/1e3).toFixed(1) + 'k';
+  return 'R$ ' + a.toFixed(0);
+}
+
+/* ── SHARED CHART OPTIONS ── */
+const GRID  = '#e5e7eb';
+const MUTED = '#6b7280';
+const DARK  = '#374151';
+
+/* ── TAB NAVIGATION ── */
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'categories' && !window._catBuilt) buildCatCharts();
+}
+
+/* ── OVERVIEW CHARTS ── */
+function buildOverview() {
+  // Main: receitas vs despesas + saldo
+  new Chart(document.getElementById('mainChart'), {
+    data: {
+      labels: MONTHS,
+      datasets: [
+        {
+          type:'bar', label:'Receitas', data: TOTAL_REC,
+          backgroundColor:'rgba(26,86,219,0.85)', borderRadius:5,
+          order:2, yAxisID:'y'
+        },
+        {
+          type:'bar', label:'Despesas', data: TOTAL_DESP.map(v => -v),
+          backgroundColor:'rgba(220,38,38,0.85)', borderRadius:5,
+          order:2, yAxisID:'y'
+        },
+        {
+          type:'line', label:'Saldo final', data: SALDO.slice(0,7),
+          borderColor:'#057a55', backgroundColor:'rgba(5,122,85,0.06)',
+          borderWidth:2.5, pointRadius:6, pointBackgroundColor:'#057a55',
+          pointBorderColor:'#fff', pointBorderWidth:2.5,
+          tension:0.3, fill:false, order:1, yAxisID:'y'
+        }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx => ' ' + ctx.dataset.label + ': ' + fmtAbs(Math.abs(ctx.raw))}}
+      },
+      scales:{
+        x:{ticks:{color:MUTED,font:{size:12}},grid:{display:false},border:{color:GRID}},
+        y:{
+          ticks:{color:MUTED,font:{size:11},callback:v=>(v<0?'-':'')+'R$'+Math.abs(v/1000).toFixed(0)+'k'},
+          grid:{color:GRID}, border:{display:false}
+        }
+      }
+    }
+  });
+
+  // Resultado
+  new Chart(document.getElementById('resultChart'), {
+    type:'bar',
+    data:{
+      labels:MONTHS,
+      datasets:[{
+        data:RES_OP,
+        backgroundColor:RES_OP.map(v=>v>=0?'rgba(5,122,85,0.85)':'rgba(220,38,38,0.85)'),
+        borderRadius:5
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+fmtK(ctx.raw)}}},
+      scales:{
+        x:{ticks:{color:MUTED,font:{size:12}},grid:{display:false}},
+        y:{ticks:{color:MUTED,font:{size:11},callback:v=>(v<0?'-':'')+'R$'+Math.abs(v/1000).toFixed(0)+'k'},grid:{color:GRID},border:{display:false}}
+      }
+    }
+  });
+
+  // Saldo
+  new Chart(document.getElementById('saldoChart'), {
+    type:'line',
+    data:{
+      labels:SALDO_M,
+      datasets:[{
+        data:SALDO,
+        borderColor:'#1a56db',
+        backgroundColor:'rgba(26,86,219,0.06)',
+        borderWidth:2.5,
+        pointRadius:6,
+        pointBackgroundColor:SALDO.map(v=>v>=0?'#1a56db':'#dc2626'),
+        pointBorderColor:'#fff', pointBorderWidth:2.5,
+        fill:true, tension:0.3
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' Saldo: '+fmtK(ctx.raw)}}},
+      scales:{
+        x:{ticks:{color:MUTED,font:{size:12}},grid:{display:false}},
+        y:{ticks:{color:MUTED,font:{size:11},callback:v=>(v<0?'-':'')+'R$'+Math.abs(v/1000).toFixed(0)+'k'},grid:{color:GRID},border:{display:false}}
+      }
+    }
+  });
+}
+
+/* ── DRE TAB ── */
+let _pctChart = null;
+
+function buildDREBtns() {
+  const c = document.getElementById('dreBtns');
+  MONTHS.forEach((m,i) => {
+    const b = document.createElement('button');
+    const warn = REC_NONOP[i] > 5000;
+    b.className = 'month-btn' + (warn ? ' warn' : '');
+    b.textContent = m + (warn ? ' ⚠' : '');
+    b.onclick = () => selectMonth(i);
+    c.appendChild(b);
+  });
+}
+
+function selectMonth(i) {
+  document.querySelectorAll('.month-btn').forEach((b,j) => b.classList.toggle('active', j===i));
+  renderDRE(i);
+  renderPct(i);
+}
+
+function renderDRE(i) {
+  const ro = REC_OP[i], rn = REC_NONOP[i], tr = TOTAL_REC[i], td = TOTAL_DESP[i];
+  const resTotal = tr - td, resOp = ro - td;
+  const warn = rn > 5000;
+  document.getElementById('dreCard').innerHTML = `
+    <div class="card-title" style="margin-bottom:18px">${MONTHS[i]} / 2026 &mdash; DRE</div>
+    <div class="dre-row">
+      <span style="color:var(--gray-700)">Receita operacional</span>
+      <span style="font-weight:600;color:var(--green)">${fmtAbs(ro)}</span>
+    </div>
+    <div class="dre-row">
+      <span style="color:var(--gray-700)">Outras receitas${warn?'<span class="badge badge-warn">Não-op</span>':''}</span>
+      <span style="font-weight:500;color:${warn?'var(--amber)':'var(--gray-400)'}">${rn>0?fmtAbs(rn):'—'}</span>
+    </div>
+    <div class="dre-row dre-sep">
+      <span>Total receitas</span>
+      <span style="color:var(--green)">${fmtAbs(tr)}</span>
+    </div>
+    <div class="dre-row" style="margin-top:8px">
+      <span style="color:var(--gray-700)">Total despesas</span>
+      <span style="font-weight:600;color:var(--red)">${fmtAbs(td)}</span>
+    </div>
+    <div class="dre-result ${resTotal>=0?'positive':'negative'}" style="margin-top:12px">
+      <span>Resultado total</span>
+      <span>${fmtK(resTotal)}</span>
+    </div>
+    <div class="dre-result-op">
+      <span style="color:var(--gray-600)">Resultado operacional<br><small style="color:var(--gray-400)">excluindo rec. não-op</small></span>
+      <span style="font-weight:600;color:${resOp>=0?'var(--green)':'var(--red)'}">${fmtK(resOp)}</span>
+    </div>
+    ${warn?`<div class="note-bar" style="margin-top:12px">⚠ Outras receitas de ${fmtAbs(rn)} podem ser aporte de sócios ou empréstimo recebido — verificar e reclassificar.</div>`:''}
+  `;
+}
+
+function renderPct(i) {
+  const tr = TOTAL_REC[i];
+  const pcts = CAT_DATA.map(c => Math.round((c[i]/tr)*1000)/10);
+  if (_pctChart) _pctChart.destroy();
+  const maxPct = Math.min(Math.max(...pcts) + 8, 100);
+  document.getElementById('pctWrap').style.height = (CAT_LABELS.length * 35 + 60) + 'px';
+  _pctChart = new Chart(document.getElementById('pctChart'), {
+    type:'bar',
+    data:{
+      labels:CAT_LABELS,
+      datasets:[{
+        data:pcts,
+        backgroundColor:CAT_COLORS,
+        borderRadius:4
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>' '+ctx.raw+'% ('+fmtAbs(CAT_DATA[ctx.dataIndex][i])+')'}}
+      },
+      scales:{
+        x:{ticks:{color:MUTED,font:{size:11},callback:v=>v+'%'},grid:{color:GRID},border:{display:false},max:maxPct},
+        y:{ticks:{color:DARK,font:{size:12}},grid:{display:false},border:{display:false}}
+      }
+    }
+  });
+  const totPct = Math.round((TOTAL_DESP[i]/tr)*100);
+  const note = document.getElementById('pctNote');
+  let txt = `Total despesas = <strong>${totPct}%</strong> da receita total`;
+  if (REC_NONOP[i] > 5000) {
+    const opPct = Math.round((TOTAL_DESP[i]/REC_OP[i])*100);
+    txt += ` &nbsp;·&nbsp; <span style="color:var(--amber)">Sem receitas não-op: <strong>${opPct}%</strong> da receita operacional</span>`;
+  }
+  note.innerHTML = txt;
+  document.getElementById('pctSub').textContent = MONTHS[i] + ' / 2026';
+}
+
+/* ── CATEGORIES ── */
+function buildCatCharts() {
+  window._catBuilt = true;
+
+  // Legend
+  const leg = document.getElementById('catLegend');
+  CAT_LABELS.forEach((l,i) => {
+    const s = document.createElement('span');
+    s.className = 'leg';
+    s.innerHTML = `<span class="leg-sq" style="background:${CAT_COLORS[i]}"></span>${l}`;
+    leg.appendChild(s);
+  });
+
+  // Stacked bar
+  new Chart(document.getElementById('catChart'), {
+    type:'bar',
+    data:{
+      labels:MONTHS,
+      datasets:CAT_LABELS.map((l,i)=>({
+        label:l, data:CAT_DATA[i],
+        backgroundColor:CAT_COLORS[i]+'d0',
+        borderWidth:0, stack:'s'
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+fmtAbs(ctx.raw)}}},
+      scales:{
+        x:{ticks:{color:MUTED,font:{size:12}},grid:{display:false}},
+        y:{stacked:true,ticks:{color:MUTED,font:{size:11},callback:v=>'R$'+v/1000+'k'},grid:{color:GRID},border:{display:false}}
+      }
+    }
+  });
+
+  // Donut
+  const totals = CAT_LABELS.map((_,i) => CAT_DATA[i].reduce((a,b)=>a+b,0));
+  const totalAll = totals.reduce((a,b)=>a+b,0);
+  new Chart(document.getElementById('donutChart'), {
+    type:'doughnut',
+    data:{labels:CAT_LABELS,datasets:[{data:totals,backgroundColor:CAT_COLORS,borderWidth:2,borderColor:'#fff'}]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:true,position:'right',labels:{font:{size:12},color:DARK,usePointStyle:true,pointStyleWidth:12,padding:10}},
+        tooltip:{callbacks:{label:ctx=>{
+          const pct=Math.round((ctx.raw/totalAll)*100);
+          return ` ${ctx.label}: ${fmtAbs(ctx.raw)} (${pct}%)`;
+        }}}
+      },
+      cutout:'60%'
+    }
+  });
+
+  // Vendas vs Receitas
+  new Chart(document.getElementById('vendChart'), {
+    data:{
+      labels:MONTHS,
+      datasets:[
+        {type:'bar',label:'Desp. Vendas/Serv.',data:CAT_DATA[1],backgroundColor:'rgba(220,38,38,0.8)',borderRadius:4,yAxisID:'y'},
+        {type:'line',label:'Receita op.',data:REC_OP,borderColor:'#1a56db',backgroundColor:'rgba(26,86,219,0.06)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#1a56db',pointBorderColor:'#fff',pointBorderWidth:2,fill:false,tension:0.3,yAxisID:'y'}
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{font:{size:12},color:DARK,usePointStyle:true}},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+fmtAbs(ctx.raw)}}},
+      scales:{
+        x:{ticks:{color:MUTED,font:{size:12}},grid:{display:false}},
+        y:{ticks:{color:MUTED,font:{size:11},callback:v=>'R$'+v/1000+'k'},grid:{color:GRID},border:{display:false}}
+      }
+    }
+  });
+}
+
+/* ── INIT ── */
+buildOverview();
+buildDREBtns();
+selectMonth(0);
+</script>
+</body>
+</html>
