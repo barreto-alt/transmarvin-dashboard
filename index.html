@@ -399,9 +399,14 @@
 
     <div class="kpi-grid">
       <div class="kpi kpi-accent">
-        <div class="kpi-label">Receitas Realizadas</div>
-        <div class="kpi-value" style="color:var(--blue)">R$ 3,86M</div>
-        <div class="kpi-sub">Jan–Jul 2026 · operacional</div>
+        <div class="kpi-label">Receita Operacional</div>
+        <div class="kpi-value" style="color:var(--blue)">R$ 3,48M</div>
+        <div class="kpi-sub">Jan–Jul 2026</div>
+      </div>
+      <div class="kpi kpi-amber">
+        <div class="kpi-label">Rec. Não-Operacional</div>
+        <div class="kpi-value" style="color:var(--amber)">R$ 387k</div>
+        <div class="kpi-sub">Aportes / empréstimos <span class="badge badge-warn">Verificar</span></div>
       </div>
       <div class="kpi kpi-red">
         <div class="kpi-label">Despesas Realizadas</div>
@@ -410,13 +415,8 @@
       </div>
       <div class="kpi kpi-red">
         <div class="kpi-label">Resultado Operacional</div>
-        <div class="kpi-value" style="color:var(--red)">-R$ 88,2k</div>
-        <div class="kpi-sub">Acumulado jan–jul</div>
-      </div>
-      <div class="kpi kpi-amber">
-        <div class="kpi-label">Saldo em Caixa (jul)</div>
-        <div class="kpi-value" style="color:var(--amber)">-R$ 16,3k</div>
-        <div class="kpi-sub">Realizado <span class="badge badge-warn">Atenção</span></div>
+        <div class="kpi-value" style="color:var(--red)">-R$ 475,5k</div>
+        <div class="kpi-sub">Acumulado jan–jul <span class="badge badge-red">Crítico</span></div>
       </div>
     </div>
 
@@ -428,7 +428,8 @@
         </div>
       </div>
       <div class="legend">
-        <span class="leg"><span class="leg-sq" style="background:#1a56db"></span>Receitas totais</span>
+        <span class="leg"><span class="leg-sq" style="background:#1a56db"></span>Receita operacional</span>
+        <span class="leg"><span class="leg-sq" style="background:#d97706"></span>Rec. não-operacional</span>
         <span class="leg"><span class="leg-sq" style="background:#e34948"></span>Despesas</span>
         <span class="leg"><span class="leg-line" style="background:#057a55"></span>Saldo final</span>
       </div>
@@ -527,9 +528,9 @@
 
       <div class="insight-card alert">
         <div class="insight-icon">📉</div>
-        <div class="insight-metric" style="color:var(--red)">5 de 7</div>
+        <div class="insight-metric" style="color:var(--red)">6 de 7</div>
         <div class="insight-title">Meses com resultado operacional negativo</div>
-        <div class="insight-body">Apenas abril (+R$ 35k) e junho (+R$ 86k, com não-op) fecharam no positivo. O caixa opera no limite mês a mês. Sem melhora na margem operacional, a empresa depende de aportes externos para se sustentar.</div>
+        <div class="insight-body">Apenas abril (+R$ 33k) teve resultado operacional positivo. Junho parecia bom (+R$ 86k), mas excluindo a entrada não-operacional de R$ 294k, o resultado real foi <strong>-R$ 208k</strong> — o pior do período. A empresa depende de aportes para fechar o caixa.</div>
       </div>
 
       <div class="insight-card alert">
@@ -680,20 +681,25 @@ function showTab(name, btn) {
 
 /* ── OVERVIEW CHARTS ── */
 function buildOverview() {
-  // Main: receitas vs despesas + saldo
+  // Main: receita operacional + não-op + despesas + saldo
   new Chart(document.getElementById('mainChart'), {
     data: {
       labels: MONTHS,
       datasets: [
         {
-          type:'bar', label:'Receitas', data: TOTAL_REC,
-          backgroundColor:'rgba(26,86,219,0.85)', borderRadius:5,
-          order:2, yAxisID:'y'
+          type:'bar', label:'Receita operacional', data: REC_OP,
+          backgroundColor:'rgba(26,86,219,0.85)', borderRadius:0,
+          order:2, yAxisID:'y', stack:'rec'
+        },
+        {
+          type:'bar', label:'Rec. não-operacional', data: REC_NONOP,
+          backgroundColor:'rgba(217,119,6,0.85)', borderRadius:5,
+          order:2, yAxisID:'y', stack:'rec'
         },
         {
           type:'bar', label:'Despesas', data: TOTAL_DESP.map(v => -v),
           backgroundColor:'rgba(220,38,38,0.85)', borderRadius:5,
-          order:2, yAxisID:'y'
+          order:2, yAxisID:'y', stack:'desp'
         },
         {
           type:'line', label:'Saldo final', data: SALDO.slice(0,7),
