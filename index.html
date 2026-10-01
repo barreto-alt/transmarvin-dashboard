@@ -416,6 +416,7 @@
     <button class="nav-btn" onclick="showTab('categories',this)">Categorias</button>
     <button class="nav-btn" onclick="showTab('insights',this)">Insights</button>
     <button class="nav-btn" onclick="showTab('vendas',this)">Vendas</button>
+    <button class="nav-btn" onclick="showTab('projetos',this)">Projetos</button>
   </div>
 </nav>
 
@@ -647,6 +648,34 @@
 
   </div>
 
+  <!-- ===== PROJETOS ===== -->
+  <div class="tab-panel" id="tab-projetos">
+    <div class="kpi-grid" style="margin-bottom:20px" id="proj-kpis"></div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Projetos em carteira</div>
+          <div class="card-sub">Receita = Saúde Financeira + Custo · ordenar por coluna</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="vnd-table" id="projetosTable" style="width:100%;font-size:13px">
+          <thead>
+            <tr>
+              <th style="text-align:left;cursor:pointer" onclick="sortProjetos('nome')">Projeto ↕</th>
+              <th style="cursor:pointer" onclick="sortProjetos('rec')">Receita ↕</th>
+              <th style="cursor:pointer" onclick="sortProjetos('custo')">Custo ↕</th>
+              <th style="cursor:pointer" onclick="sortProjetos('lucro')">Lucro ↕</th>
+              <th style="cursor:pointer" onclick="sortProjetos('margem')">Margem ↕</th>
+              <th style="cursor:pointer" onclick="sortProjetos('pct')">% Exec. ↕</th>
+            </tr>
+          </thead>
+          <tbody id="projetosTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== VENDAS ===== -->
   <div class="tab-panel" id="tab-vendas">
 
@@ -774,6 +803,7 @@ function showTab(name, btn) {
   btn.classList.add('active');
   if (name === 'categories' && !window._catBuilt) buildCatCharts();
   if (name === 'vendas' && !window._vendasBuilt) buildVendas();
+  if (name === 'projetos' && !window._projetosBuilt) buildProjetos();
 }
 
 /* ── OVERVIEW CHARTS ── */
@@ -1139,6 +1169,118 @@ function toggleVendasTable() {
   const open=t.style.display==='table';
   t.style.display=open?'none':'table';
   btn.textContent=open?'Ver tabela completa':'Ocultar tabela';
+}
+
+/* ── PROJETOS DATA ── */
+const PROJ_DATA = [
+  {nome:"01 X 40° - OS 2998",        saude:8358.24,   custo:29791.76, pct:0,    dias:300},
+  {nome:"01 x 40° - OS 3173",        saude:13118.92,  custo:5581.08,  pct:0,    dias:0},
+  {nome:"01 x 40° - OS 3288",        saude:12310.68,  custo:92324.59, pct:0,    dias:0},
+  {nome:"02 X 20° - OS 3119",        saude:39750.28,  custo:71849.72, pct:0,    dias:0},
+  {nome:"02 X 20° - OS 3295",        saude:13028.49,  custo:18971.49, pct:0,    dias:0},
+  {nome:"03 X 40° HC - OS 2874",     saude:43481.10,  custo:7518.90,  pct:75,   dias:347},
+  {nome:"1° ONE WAY - OS 3485",      saude:7577.04,   custo:12822.96, pct:0,    dias:0},
+  {nome:"2 BABYS - OS 3417",         saude:42785.92,  custo:19245.18, pct:0,    dias:0},
+  {nome:"2 REDUÇÕES - OS 3463",      saude:8689.67,   custo:10366.99, pct:0,    dias:0},
+  {nome:"2° ONE WAY - OS 3493",      saude:4687.04,   custo:12412.96, pct:0,    dias:0},
+  {nome:"ALESSANDRO - OS 3543",      saude:5801.66,   custo:13255.00, pct:0,    dias:0},
+  {nome:"AZUL ANIL - OS 2935",       saude:4539.63,   custo:19683.37, pct:50,   dias:330},
+  {nome:"AZUL DEL REY - OS 2986",    saude:12309.11,  custo:24640.89, pct:0,    dias:0},
+  {nome:"BABY - OS 2395",            saude:3682.20,   custo:33673.80, pct:0,    dias:315},
+  {nome:"BABY ONEY WAY - OS 3036",   saude:74510.96,  custo:22089.04, pct:0,    dias:0},
+  {nome:"LANCHONETE - OS 3365",      saude:44308.69,  custo:66182.83, pct:0,    dias:0},
+  {nome:"LANCHONETE 01X20 HC-2937",  saude:11220.00,  custo:6680.00,  pct:0,    dias:325},
+  {nome:"LANCHONETE 01X20°-OS 3034", saude:4713.92,   custo:15656.08, pct:0,    dias:0},
+  {nome:"LOCAÇÃO ADM - OS 3402",     saude:22682.42,  custo:6085.18,  pct:0,    dias:0},
+  {nome:"MINI BABY - DEPÓSITO",      saude:-11074.62, custo:11074.62, pct:0,    dias:0},
+  {nome:"ONE WAY - OS 3044",         saude:9094.91,   custo:21805.09, pct:0,    dias:0},
+  {nome:"ONE WAY - OS 3085",         saude:5367.54,   custo:20410.23, pct:0,    dias:0},
+  {nome:"PASTELARIA - OS 2665",      saude:8609.38,   custo:36190.62, pct:37.5, dias:407},
+  {nome:"PROJETO ACADEMIA-PASTOR",   saude:-36765.64, custo:36765.64, pct:0,    dias:325},
+  {nome:"PROJETO BABY - OS 3168",    saude:8369.74,   custo:6930.26,  pct:0,    dias:0},
+  {nome:"PROJETO CASA REEFER-3229",  saude:12685.14,  custo:50214.86, pct:0,    dias:0},
+  {nome:"PROJETO FÁBRICA - OS 3003", saude:52916.58,  custo:164972.27,pct:0,    dias:0},
+  {nome:"PROJETO GABRIEL - OS 3213", saude:11927.25,  custo:16572.75, pct:0,    dias:0},
+  {nome:"PROJ. MINIMERCADO-OS 3426", saude:7766.55,   custo:4433.45,  pct:0,    dias:0},
+  {nome:"PROJETO REEFER - OS 3559",  saude:23541.20,  custo:50322.80, pct:0,    dias:0},
+  {nome:"PROJETO STELLA - OS 3202",  saude:16472.86,  custo:45322.14, pct:0,    dias:0},
+  {nome:"REDUÇÃO 40° P/20°-OS 3394", saude:29454.45,  custo:9439.55,  pct:0,    dias:0},
+  {nome:"REEFER CAIXA - OS 3407",    saude:20914.89,  custo:30720.91, pct:0,    dias:0},
+  {nome:"REEFER FUNCIONANDO-OS 3408",saude:12308.02,  custo:12991.98, pct:0,    dias:0},
+];
+
+let _projSort = {col:'margem', asc:false};
+
+function fmtProj(v) {
+  const a=Math.abs(v), s=v<0?'−':'';
+  if(a>=1e6) return s+'R$'+(a/1e6).toFixed(2)+'M';
+  if(a>=1e3) return s+'R$'+(a/1e3).toFixed(0)+'K';
+  return s+'R$'+a.toFixed(0);
+}
+
+function sortProjetos(col) {
+  if(_projSort.col===col) _projSort.asc=!_projSort.asc;
+  else { _projSort.col=col; _projSort.asc=col==='nome'; }
+  renderProjetos();
+}
+
+function renderProjetos() {
+  const tbody = document.getElementById('projetosTbody');
+  tbody.innerHTML='';
+  const data = PROJ_DATA.map(p=>({...p, rec:p.saude+p.custo, margem:p.saude+p.custo>0?p.saude/(p.saude+p.custo)*100:0}));
+  const col = _projSort.col;
+  data.sort((a,b)=>{
+    const va = col==='nome'?a.nome:a[col];
+    const vb = col==='nome'?b.nome:b[col];
+    return _projSort.asc ? (va>vb?1:-1) : (va<vb?1:-1);
+  });
+  data.forEach(p=>{
+    const neg = p.saude<0;
+    const margPct = p.rec>0 ? p.margem.toFixed(1)+'%' : '—';
+    tbody.insertAdjacentHTML('beforeend',`<tr>
+      <td style="text-align:left;font-weight:500">${p.nome}</td>
+      <td>${p.rec>0?fmtProj(p.rec):'—'}</td>
+      <td>${fmtProj(p.custo)}</td>
+      <td class="${neg?'vnd-neg':'vnd-pos'}">${fmtProj(p.saude)}</td>
+      <td class="${neg?'vnd-neg':p.margem>=30?'vnd-pos':''}">${margPct}</td>
+      <td>${p.pct>0?p.pct+'%':'—'}</td>
+    </tr>`);
+  });
+  // Total row
+  const tRec=data.reduce((s,p)=>s+p.rec,0);
+  const tCusto=data.reduce((s,p)=>s+p.custo,0);
+  const tLucro=data.reduce((s,p)=>s+p.saude,0);
+  const tMarg=(tLucro/tRec*100).toFixed(1);
+  tbody.insertAdjacentHTML('beforeend',`<tr class="vnd-total">
+    <td style="text-align:left">TOTAL (${data.length} projetos)</td>
+    <td>${fmtProj(tRec)}</td><td>${fmtProj(tCusto)}</td>
+    <td class="vnd-pos">${fmtProj(tLucro)}</td>
+    <td class="vnd-pos">${tMarg}%</td><td>—</td>
+  </tr>`);
+}
+
+function buildProjetos() {
+  window._projetosBuilt = true;
+  // KPIs
+  const tRec=PROJ_DATA.reduce((s,p)=>s+(p.saude+p.custo),0);
+  const tCusto=PROJ_DATA.reduce((s,p)=>s+p.custo,0);
+  const tLucro=PROJ_DATA.reduce((s,p)=>s+p.saude,0);
+  const tMarg=(tLucro/tRec*100).toFixed(1);
+  const negativos=PROJ_DATA.filter(p=>p.saude<0).length;
+  document.getElementById('proj-kpis').innerHTML=`
+    <div class="kpi kpi-accent"><div class="kpi-label">Receita em Carteira</div>
+      <div class="kpi-value" style="color:var(--blue)">${fmtProj(tRec)}</div>
+      <div class="kpi-sub">${PROJ_DATA.length} projetos ativos</div></div>
+    <div class="kpi kpi-red"><div class="kpi-label">Custo Total</div>
+      <div class="kpi-value" style="color:var(--red)">${fmtProj(tCusto)}</div>
+      <div class="kpi-sub">Custos alocados</div></div>
+    <div class="kpi kpi-accent"><div class="kpi-label">Lucro em Carteira</div>
+      <div class="kpi-value" style="color:var(--green)">${fmtProj(tLucro)}</div>
+      <div class="kpi-sub">Saúde financeira acumulada</div></div>
+    <div class="kpi ${negativos>0?'kpi-red':'kpi-accent'}"><div class="kpi-label">Margem Média</div>
+      <div class="kpi-value" style="color:${negativos>0?'var(--red)':'var(--green)'}">${tMarg}%</div>
+      <div class="kpi-sub">${negativos} projeto(s) negativo(s)</div></div>`;
+  renderProjetos();
 }
 
 /* ── INIT ── */
