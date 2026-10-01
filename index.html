@@ -219,6 +219,33 @@
     .month-btn.warn { border-color: #d97706; color: #92400e; }
     .month-btn.active.warn { background: #d97706; border-color: #d97706; color: var(--white); }
 
+    /* VENDAS TAB */
+    .vnd-tbl-btn {
+      background: none; border: 1px solid var(--gray-200); border-radius: 4px;
+      padding: 4px 12px; font-size: 11px; color: var(--gray-500);
+      cursor: pointer; margin-top: 14px; font-family: inherit;
+    }
+    .vnd-tbl-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .vnd-table {
+      width: 100%; border-collapse: collapse; font-size: 11.5px;
+      margin-top: 14px; display: none; font-variant-numeric: tabular-nums;
+    }
+    .vnd-table th {
+      text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--gray-200);
+      color: var(--gray-500); font-weight: 600; font-size: 10px;
+      text-transform: uppercase; letter-spacing: .05em;
+    }
+    .vnd-table th:first-child { text-align: left; }
+    .vnd-table td {
+      text-align: right; padding: 7px 10px;
+      border-bottom: 1px solid var(--gray-100); color: var(--gray-700);
+    }
+    .vnd-table td:first-child { text-align: left; color: var(--gray-500); }
+    .vnd-table tr.vnd-total td { border-top: 1px solid var(--gray-300); border-bottom: none; font-weight: 700; }
+    .vnd-table tr:hover td { background: var(--gray-50); }
+    .vnd-pos { color: #057a55 !important; font-weight: 600; }
+    .vnd-neg { color: #c81e1e !important; font-weight: 600; }
+
     /* DRE */
     .dre-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
     .dre-row {
@@ -377,7 +404,7 @@
         <div class="logo-sub">Dashboard Financeiro</div>
       </div>
     </div>
-    <span class="header-badge">Jan – Jul 2026</span>
+    <span class="header-badge">Jan – Set 2026</span>
   </div>
 </header>
 
@@ -388,6 +415,7 @@
     <button class="nav-btn" onclick="showTab('dre',this)">DRE Mensal</button>
     <button class="nav-btn" onclick="showTab('categories',this)">Categorias</button>
     <button class="nav-btn" onclick="showTab('insights',this)">Insights</button>
+    <button class="nav-btn" onclick="showTab('vendas',this)">Vendas</button>
   </div>
 </nav>
 
@@ -400,23 +428,23 @@
     <div class="kpi-grid">
       <div class="kpi kpi-accent">
         <div class="kpi-label">Receita Operacional</div>
-        <div class="kpi-value" style="color:var(--blue)">R$ 3,48M</div>
-        <div class="kpi-sub">Jan–Jul 2026</div>
+        <div class="kpi-value" style="color:var(--blue)">R$ 4,33M</div>
+        <div class="kpi-sub">Jan–Set 2026</div>
       </div>
       <div class="kpi kpi-amber">
         <div class="kpi-label">Rec. Não-Operacional</div>
-        <div class="kpi-value" style="color:var(--amber)">R$ 387k</div>
+        <div class="kpi-value" style="color:var(--amber)">R$ 407,6k</div>
         <div class="kpi-sub">Aportes / empréstimos <span class="badge badge-warn">Verificar</span></div>
       </div>
       <div class="kpi kpi-red">
         <div class="kpi-label">Despesas Realizadas</div>
-        <div class="kpi-value" style="color:var(--red)">R$ 3,95M</div>
-        <div class="kpi-sub">Jan–Jul 2026</div>
+        <div class="kpi-value" style="color:var(--red)">R$ 4,92M</div>
+        <div class="kpi-sub">Jan–Set 2026</div>
       </div>
       <div class="kpi kpi-red">
         <div class="kpi-label">Resultado Operacional</div>
-        <div class="kpi-value" style="color:var(--red)">-R$ 475,5k</div>
-        <div class="kpi-sub">Acumulado jan–jul <span class="badge badge-red">Crítico</span></div>
+        <div class="kpi-value" style="color:var(--red)">-R$ 591,3k</div>
+        <div class="kpi-sub">Acumulado jan–set <span class="badge badge-red">Crítico</span></div>
       </div>
     </div>
 
@@ -498,7 +526,7 @@
 
     <div class="grid-2">
       <div class="card">
-        <div class="card-title" style="margin-bottom:16px">Participação acumulada jan–jul</div>
+        <div class="card-title" style="margin-bottom:16px">Participação acumulada jan–set</div>
         <div class="chart-wrap" style="height:280px">
           <canvas id="donutChart" role="img" aria-label="Rosca com participação percentual de cada categoria no total acumulado de despesas">Participação por categoria acumulada.</canvas>
         </div>
@@ -619,36 +647,104 @@
 
   </div>
 
+  <!-- ===== VENDAS ===== -->
+  <div class="tab-panel" id="tab-vendas">
+
+    <!-- KPI row -->
+    <div class="kpi-grid" style="margin-bottom:20px">
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Total 2026 (jan–set)</div>
+        <div class="kpi-value" style="color:var(--blue)">R$ 4,99M</div>
+        <div class="kpi-sub">Acumulado do ano</div>
+      </div>
+      <div class="kpi kpi-red">
+        <div class="kpi-label">Gap vs 2025 nominal</div>
+        <div class="kpi-value" style="color:var(--red)">−R$ 645K</div>
+        <div class="kpi-sub">−11,5% vs ano anterior</div>
+      </div>
+      <div class="kpi kpi-red">
+        <div class="kpi-label">Gap vs 2025 +5% (inflação)</div>
+        <div class="kpi-value" style="color:var(--red)">−R$ 927K</div>
+        <div class="kpi-sub">Abaixo da correção inflacionária</div>
+      </div>
+      <div class="kpi kpi-red">
+        <div class="kpi-label">Gap vs 2025 +10% (meta)</div>
+        <div class="kpi-value" style="color:var(--red)">−R$ 1,21M</div>
+        <div class="kpi-sub">Abaixo da meta de crescimento</div>
+      </div>
+    </div>
+
+    <!-- Main vendas chart -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Vendas mensais — 2026 real vs referências 2025</div>
+          <div class="card-sub">Barras = 2026 real · Linhas = benchmarks de 2025</div>
+        </div>
+        <div class="legend">
+          <div class="leg"><div class="leg-sq" style="background:#1a56db"></div>2026 real</div>
+          <div class="leg"><div class="leg-line" style="background:#eb6834"></div>2025</div>
+          <div class="leg"><div class="leg-line" style="background:#1baf7a;opacity:.8"></div>+5% inflação</div>
+          <div class="leg"><div class="leg-line" style="background:#eda100;opacity:.8"></div>+10% meta</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:320px"><canvas id="vendasMainChart"></canvas></div>
+      <button class="vnd-tbl-btn" onclick="toggleVendasTable()">Ver tabela completa</button>
+      <p style="font-size:11px;color:var(--gray-500);margin-top:6px">* Agosto/2026: R$ 160.660 — mês possivelmente incompleto</p>
+      <table class="vnd-table" id="vendasTable">
+        <thead>
+          <tr>
+            <th>Mês</th><th>2025</th><th>+5%</th><th>+10%</th>
+            <th>2026 real</th><th>Gap vs 2025</th><th>Gap vs +5%</th>
+          </tr>
+        </thead>
+        <tbody id="vendasTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Gap chart -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Gap mensal: 2026 vs 2025 nominal</div>
+          <div class="card-sub">Verde = 2026 acima de 2025 · Vermelho = 2026 abaixo de 2025</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:180px"><canvas id="vendasGapChart"></canvas></div>
+    </div>
+
+  </div>
+
 </main>
 
 <footer>
-  TRANSMARVIN · Dados: Conta Azul · Ano fiscal 2026 · Agosto reflete dados parciais · Atualizado em agosto/2026
+  TRANSMARVIN · Dados: Conta Azul · Ano fiscal 2026 · Agosto/26 dados parciais · Atualizado em agosto/2026
 </footer>
 
 <script>
 /* ── DATA ── */
-const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul'];
-const REC_OP    = [478356, 366628, 550042, 578412, 529087, 535887, 439668];
-const REC_NONOP = [3508,   8141,   22759,  2275,   163,    294434, 56010];
-const TOTAL_REC = [481864, 374769, 572801, 580686, 529250, 830321, 495678];
-const TOTAL_DESP= [486632, 434953, 590975, 545361, 609616, 743869, 542203];
-const SALDO     = [67177,  6992,  -11181,  24144, -56221,  30231, -16294, -49305];
-const SALDO_M   = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago'];
+const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set'];
+const REC_OP    = [478356, 366628, 550042, 578411, 529087, 535888, 518363, 291049, 479202];
+const REC_NONOP = [3508,   8141,   22759,  2275,   163,   294434, 56010,      0,  20338];
+const TOTAL_REC = [481864, 374769, 572801, 580686, 529250, 830322, 574373, 291049, 499540];
+const TOTAL_DESP= [486632, 434953, 590975, 545361, 609616, 744038, 542475, 466961, 497342];
+const SALDO     = [67177,  6992,  -11181,  24144, -56221,  30231,  60761, -115151, -112953];
+const SALDO_M   = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set'];
 const RES_OP    = REC_OP.map((r,i) => r - TOTAL_DESP[i]);
 
 const CAT_LABELS = ['Impostos','Vendas/Serv.','Pessoal','Adm.','Comercial','Imóvel','Veículos','Diretoria','Fin.+Emprést.','Outros'];
 const CAT_COLORS = ['#1a56db','#dc2626','#d97706','#059669','#7c3aed','#0891b2','#9ca3af','#ec4899','#16a34a','#92400e'];
 const CAT_DATA   = [
-  [12246, 9526,  19072,  6535,  4492, 13166,  6564],
-  [349305,291031,425280,383274,441550,482653,366544],
-  [23082, 32141, 36809, 45096, 23515, 41493, 41846],
-  [27370, 30900, 25234, 21846, 50743, 57331, 28157],
-  [19208, 20020, 13795, 15943, 16672, 19989, 22376],
-  [14994, 14743, 15122, 29722, 14000, 29183,   933],
-  [1032,    755,  6882,  1193,  1868,  2169,  2218],
-  [24853, 20646, 22811, 21129, 25536, 22203,  1814],
-  [12145, 12310, 11812, 13403, 19420, 67455, 30506],
-  [2397,  2881,  14158,  7220, 11820,  8227, 41245]
+  [12246, 9526,  19072,  6535,  4492, 13166,  6564,     0,     0],
+  [349305,291031,425280,383274,441550,482653,366544,303687,326923],
+  [23082, 32141, 36809, 45096, 23515, 41493, 41846, 43597, 28083],
+  [27370, 30900, 25234, 21846, 50743, 57331, 28157, 20980, 23496],
+  [19208, 20020, 13795, 15943, 16672, 19989, 22376, 14591, 11776],
+  [14994, 14743, 15122, 29722, 14000, 29183,   933, 14860, 14081],
+  [1032,    755,  6882,  1193,  1868,  2169,  2218,  2709,  1570],
+  [24853, 20646, 22811, 21129, 25536, 22203,  1814,   100,  1255],
+  [12145, 12310, 11812, 13403, 19420, 67455, 30506,   199,    98],
+  [2397,  2881,  14158,  7220, 11820,  8227, 41245, 66238, 90060]
 ];
 
 /* ── FORMATTERS ── */
@@ -677,6 +773,7 @@ function showTab(name, btn) {
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
   if (name === 'categories' && !window._catBuilt) buildCatCharts();
+  if (name === 'vendas' && !window._vendasBuilt) buildVendas();
 }
 
 /* ── OVERVIEW CHARTS ── */
@@ -940,6 +1037,113 @@ function buildCatCharts() {
       }
     }
   });
+}
+
+/* ── VENDAS DATA ── */
+const V_MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set'];
+const V_2024   = [460082,804736.09,589850.98,455768,628963,680360,785272,616293,435346];
+const V_2025   = [418671,333060,436866.80,475537.09,209478.07,1060026.05,1240661.22,638926.55,820488.52];
+const V_5PCT   = [439604.55,349713,458710.14,499313.94,219951.97,1113027.35,1302694.28,670872.88,861512.95];
+const V_10PCT  = [460538.10,366366,480553.48,523090.80,230425.88,1166028.66,1364727.34,702819.21,902537.37];
+const V_2026   = [526433.62,650831.06,669735.36,337910.60,491460.70,626804.53,458960.19,231717.77,994628.47];
+const V_GAPS   = V_2026.map((v,i)=>v-V_2025[i]);
+
+function fmtVnd(v, short) {
+  const abs = Math.abs(v);
+  const sign = v < 0 ? '−' : (short && v > 0 ? '+' : '');
+  if (abs >= 1e6) return sign+'R$ '+(abs/1e6).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'M';
+  if (abs >= 1e3) return sign+'R$ '+Math.round(abs/1e3).toLocaleString('pt-BR')+'K';
+  return sign+'R$ '+abs.toLocaleString('pt-BR',{minimumFractionDigits:0});
+}
+
+function buildVendas() {
+  window._vendasBuilt = true;
+
+  // Build table
+  const tbody = document.getElementById('vendasTbody');
+  V_MONTHS.forEach((m,i)=>{
+    const g=V_2026[i]-V_2025[i], g5=V_2026[i]-V_5PCT[i];
+    tbody.insertAdjacentHTML('beforeend',`<tr>
+      <td>${m}</td>
+      <td>${fmtVnd(V_2025[i])}</td>
+      <td>${fmtVnd(V_5PCT[i])}</td>
+      <td>${fmtVnd(V_10PCT[i])}</td>
+      <td><strong>${fmtVnd(V_2026[i])}</strong></td>
+      <td class="${g>=0?'vnd-pos':'vnd-neg'}">${fmtVnd(g,true)}</td>
+      <td class="${g5>=0?'vnd-pos':'vnd-neg'}">${fmtVnd(g5,true)}</td>
+    </tr>`);
+  });
+  const sum=a=>a.reduce((x,y)=>x+y,0);
+  const [t25,t5,t10,t26]=[V_2025,V_5PCT,V_10PCT,V_2026].map(sum);
+  const tg=t26-t25,tg5=t26-t5;
+  tbody.insertAdjacentHTML('beforeend',`<tr class="vnd-total">
+    <td>Total</td><td>${fmtVnd(t25)}</td><td>${fmtVnd(t5)}</td><td>${fmtVnd(t10)}</td>
+    <td>${fmtVnd(t26)}</td>
+    <td class="${tg>=0?'vnd-pos':'vnd-neg'}">${fmtVnd(tg,true)}</td>
+    <td class="${tg5>=0?'vnd-pos':'vnd-neg'}">${fmtVnd(tg5,true)}</td>
+  </tr>`);
+
+  // Main chart
+  new Chart(document.getElementById('vendasMainChart'), {
+    data: {
+      labels: V_MONTHS,
+      datasets: [
+        { type:'bar',   label:'2026 real',      data:V_2026, backgroundColor:'#1a56dbbb', borderColor:'#1a56db', borderWidth:1.5, borderRadius:4, order:2 },
+        { type:'line',  label:'2025',           data:V_2025, borderColor:'#eb6834', borderWidth:2, pointRadius:4, pointBackgroundColor:'#eb6834', tension:0.35, fill:false, order:1 },
+        { type:'line',  label:'2024',           data:V_2024, borderColor:'#9ca3af', borderWidth:1.5, borderDash:[3,3], pointRadius:3, pointBackgroundColor:'#9ca3af', tension:0.35, fill:false, order:1 },
+        { type:'line',  label:'+5% inflação',   data:V_5PCT, borderColor:'#1baf7a', borderWidth:1.5, borderDash:[5,4], pointRadius:3, pointBackgroundColor:'#1baf7a', tension:0.35, fill:false, order:1 },
+        { type:'line',  label:'+10% crescimento',data:V_10PCT,borderColor:'#eda100', borderWidth:1.5, borderDash:[2,4], pointRadius:3, pointBackgroundColor:'#eda100', tension:0.35, fill:false, order:1 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend:{display:false},
+        tooltip:{backgroundColor:'#fff',borderColor:GRID,borderWidth:1,titleColor:DARK,bodyColor:MUTED,padding:12,
+          callbacks:{label:ctx=>'  '+ctx.dataset.label+': '+fmtVnd(ctx.parsed.y)}}
+      },
+      scales: {
+        x:{ticks:{color:MUTED,font:{size:11}},grid:{display:false}},
+        y:{ticks:{color:MUTED,font:{size:11},callback:v=>{const a=Math.abs(v);return a>=1e6?'R$'+(a/1e6).toFixed(1)+'M':'R$'+Math.round(a/1e3)+'K'}},grid:{color:GRID},border:{display:false}}
+      },
+      interaction:{mode:'index',intersect:false}
+    }
+  });
+
+  // Gap chart
+  new Chart(document.getElementById('vendasGapChart'), {
+    type:'bar',
+    data: {
+      labels: V_MONTHS,
+      datasets:[{
+        label:'Gap vs 2025',
+        data:V_GAPS,
+        backgroundColor:V_GAPS.map(v=>(v>=0?'#057a55':'#c81e1e')+'99'),
+        borderColor:V_GAPS.map(v=>v>=0?'#057a55':'#c81e1e'),
+        borderWidth:1.5, borderRadius:4
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend:{display:false},
+        tooltip:{backgroundColor:'#fff',borderColor:GRID,borderWidth:1,titleColor:DARK,bodyColor:MUTED,padding:12,
+          callbacks:{label:ctx=>'  Gap: '+fmtVnd(ctx.parsed.y,true)}}
+      },
+      scales: {
+        x:{ticks:{color:MUTED,font:{size:11}},grid:{display:false}},
+        y:{ticks:{color:MUTED,font:{size:11},callback:v=>{const a=Math.abs(v),s=v<0?'−':v>0?'+':'';return a>=1e6?s+'R$'+(a/1e6).toFixed(1)+'M':s+'R$'+Math.round(a/1e3)+'K'}},grid:{color:GRID},border:{display:false}}
+      }
+    }
+  });
+}
+
+function toggleVendasTable() {
+  const t=document.getElementById('vendasTable');
+  const btn=document.querySelector('.vnd-tbl-btn');
+  const open=t.style.display==='table';
+  t.style.display=open?'none':'table';
+  btn.textContent=open?'Ver tabela completa':'Ocultar tabela';
 }
 
 /* ── INIT ── */
