@@ -662,15 +662,15 @@
         <div class="kpi-value" style="color:var(--red)">−R$ 645K</div>
         <div class="kpi-sub">−11,5% vs ano anterior</div>
       </div>
-      <div class="kpi kpi-red">
-        <div class="kpi-label">Gap vs 2025 +5% (inflação)</div>
-        <div class="kpi-value" style="color:var(--red)">−R$ 927K</div>
-        <div class="kpi-sub">Abaixo da correção inflacionária</div>
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Total 2025 (jan–set)</div>
+        <div class="kpi-value" style="color:var(--blue)">R$ 5,63M</div>
+        <div class="kpi-sub">Referência ano anterior</div>
       </div>
-      <div class="kpi kpi-red">
-        <div class="kpi-label">Gap vs 2025 +10% (meta)</div>
-        <div class="kpi-value" style="color:var(--red)">−R$ 1,21M</div>
-        <div class="kpi-sub">Abaixo da meta de crescimento</div>
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Total 2024 (jan–set)</div>
+        <div class="kpi-value" style="color:var(--blue)">R$ 5,46M</div>
+        <div class="kpi-sub">Referência 2 anos atrás</div>
       </div>
     </div>
 
@@ -694,8 +694,8 @@
       <table class="vnd-table" id="vendasTable">
         <thead>
           <tr>
-            <th>Mês</th><th>2025</th><th>+5%</th><th>+10%</th>
-            <th>2026 real</th><th>Gap vs 2025</th><th>Gap vs +5%</th>
+            <th>Mês</th><th>2024</th><th>2025</th>
+            <th>2026 real</th><th>Gap vs 2025</th>
           </tr>
         </thead>
         <tbody id="vendasTbody"></tbody>
@@ -1062,25 +1062,22 @@ function buildVendas() {
   // Build table
   const tbody = document.getElementById('vendasTbody');
   V_MONTHS.forEach((m,i)=>{
-    const g=V_2026[i]-V_2025[i], g5=V_2026[i]-V_5PCT[i];
+    const g=V_2026[i]-V_2025[i];
     tbody.insertAdjacentHTML('beforeend',`<tr>
       <td>${m}</td>
+      <td>${fmtVnd(V_2024[i])}</td>
       <td>${fmtVnd(V_2025[i])}</td>
-      <td>${fmtVnd(V_5PCT[i])}</td>
-      <td>${fmtVnd(V_10PCT[i])}</td>
       <td><strong>${fmtVnd(V_2026[i])}</strong></td>
       <td class="${g>=0?'vnd-pos':'vnd-neg'}">${fmtVnd(g,true)}</td>
-      <td class="${g5>=0?'vnd-pos':'vnd-neg'}">${fmtVnd(g5,true)}</td>
     </tr>`);
   });
   const sum=a=>a.reduce((x,y)=>x+y,0);
-  const [t25,t5,t10,t26]=[V_2025,V_5PCT,V_10PCT,V_2026].map(sum);
-  const tg=t26-t25,tg5=t26-t5;
+  const [t24,t25,t26]=[V_2024,V_2025,V_2026].map(sum);
+  const tg=t26-t25;
   tbody.insertAdjacentHTML('beforeend',`<tr class="vnd-total">
-    <td>Total</td><td>${fmtVnd(t25)}</td><td>${fmtVnd(t5)}</td><td>${fmtVnd(t10)}</td>
+    <td>Total</td><td>${fmtVnd(t24)}</td><td>${fmtVnd(t25)}</td>
     <td>${fmtVnd(t26)}</td>
     <td class="${tg>=0?'vnd-pos':'vnd-neg'}">${fmtVnd(tg,true)}</td>
-    <td class="${tg5>=0?'vnd-pos':'vnd-neg'}">${fmtVnd(tg5,true)}</td>
   </tr>`);
 
   // Main chart
@@ -1090,9 +1087,7 @@ function buildVendas() {
       datasets: [
         { type:'bar',   label:'2026 real',      data:V_2026, backgroundColor:'#1a56dbbb', borderColor:'#1a56db', borderWidth:1.5, borderRadius:4, order:2 },
         { type:'line',  label:'2025',           data:V_2025, borderColor:'#eb6834', borderWidth:2, pointRadius:4, pointBackgroundColor:'#eb6834', tension:0.35, fill:false, order:1 },
-        { type:'line',  label:'2024',           data:V_2024, borderColor:'#9ca3af', borderWidth:1.5, borderDash:[3,3], pointRadius:3, pointBackgroundColor:'#9ca3af', tension:0.35, fill:false, order:1 },
-        { type:'line',  label:'+5% inflação',   data:V_5PCT, borderColor:'#1baf7a', borderWidth:1.5, borderDash:[5,4], pointRadius:3, pointBackgroundColor:'#1baf7a', tension:0.35, fill:false, order:1 },
-        { type:'line',  label:'+10% crescimento',data:V_10PCT,borderColor:'#eda100', borderWidth:1.5, borderDash:[2,4], pointRadius:3, pointBackgroundColor:'#eda100', tension:0.35, fill:false, order:1 }
+        { type:'line',  label:'2024',           data:V_2024, borderColor:'#9ca3af', borderWidth:1.5, borderDash:[3,3], pointRadius:3, pointBackgroundColor:'#9ca3af', tension:0.35, fill:false, order:1 }
       ]
     },
     options: {
